@@ -416,8 +416,8 @@ def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activ
 def convertForListing(nft_id: str = "", price: float = 0):
     return {"nft_id": nft_id, "price": str(price)}
 
-def convertForBuying(nft_id: str = "", owner_id: int = 0, price: float = 0):
-    return {"id": nft_id, "owner_id": owner_id, "price": str(price)}
+def convertForBuying(nft_id: str = "", price: float = 0):
+    return {"id": nft_id, "price": str(price)}
 
 def bulkList(nfts: list = [], authData: str = "") -> dict:
     """
@@ -498,13 +498,12 @@ def sale(nft_id: str = "", price: int|float = 0,authData: str = "") -> dict | No
 
     return response.json() if response.status_code == 200 else None
 
-def buy(nft_id: str = "", owner_id: int = 0, price: int|float = 0, authData: str = "") -> dict | None:
+def buy(nft_id: str = "", price: int|float = 0, authData: str = "") -> dict | None:
     """
-    Buys a gift with the given nft_id from the given owner_id at the given price.
+    Buys a gift with the given nft_id at the given price.
 
     Args:
         nft_id (str): The unique identifier of the NFT to be bought.
-        owner_id (int): The Telegram ID of the user who owns the NFT.
         price (int|float): The price at which the NFT should be bought.
         authData (str): The authentication data required for the API request.
 
@@ -515,7 +514,6 @@ def buy(nft_id: str = "", owner_id: int = 0, price: int|float = 0, authData: str
     Raises:
         Exception: If authData is not provided.
         Exception: If nft_id is not provided.
-        Exception: If owner_id is not provided.
         Exception: If price is not provided or not a number.
         Exception: If the API request fails or returns a non-200 status code.
     """
@@ -525,14 +523,12 @@ def buy(nft_id: str = "", owner_id: int = 0, price: int|float = 0, authData: str
         raise Exception("portalsapi: buy(): Error: authData is required")
     if not nft_id:
         raise Exception("portalsapi: buy(): Error: nft_id is required")
-    if owner_id == 0:
-        raise Exception("portalsapi: buy(): Error: owner_id is required")
     if price == 0 or type(price) not in [int, float]:
         raise Exception("portalsapi: buy(): Error: price error")
 
     HEADERS["Authorization"] = authData
 
-    nfts = [{"id": nft_id, "owner_id": owner_id, "price": str(price)}]
+    nfts = [{"id": nft_id, "price": str(price)}]
     '''
     {"nft_details":[{"id":"aaaa8eb4-deac-4ba2-aa5c-ea79c73f0d5b","owner_id":6540727795,"price":"1.85"}]}
     '''
@@ -585,16 +581,16 @@ def makeOffer(nft_id: str = "", offer_price: float = 0, expiration_days: int = 7
     PAYLOAD = {
         "offer": {
             "nft_id": nft_id,
-            "price": str(offer_price)
+            "offer_price": str(offer_price)
             }
     }
 
     if expiration_days == 7:
-        PAYLOAD.update({"expiration_days": 7})
-
+        PAYLOAD["offer"].update({"expiration_days": expiration_days})
+    
     response = requests.post(URL, json=PAYLOAD, headers=HEADERS, impersonate="chrome110")
     if response.status_code not in [200, 204]:
-        raise Exception(f"portalsapi: makeOffer(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsapi: makeOffer(): Error: status_code: {response.status_code}, response_text: {response.content}")
 
     return response.json() if response.status_code == 200 else None
 
@@ -677,7 +673,6 @@ class PortalsGift:
         id (str): Portals ID of the gift
         tg_id (int): Telegram ID of the gift
         collection_id (str): Portals ID of the gift collection
-        owner_id (int): ID of the gift owner
         name (str): Name of the gift
         photo_url (str): Photo URL of the gift (model + bg + symbol preview)
         price (str): Price of the gift
@@ -711,10 +706,6 @@ class PortalsGift:
     @property
     def collection_id(self):
         return self.__dict__["collection_id"]
-    
-    @property
-    def owner_id(self):
-        return self.__dict__["owner_id"]
     
     @property
     def name(self):
