@@ -23,6 +23,11 @@ Huge thanks to boostNT [for his code sample](https://github.com/boostNT/Portals-
 - Removed `owner_id` from `buy()` function and `PortalsGift` class
 - `makeOffer()` should be fixed now.
 
+#### Version 1.1
+
+- Added functions for working with offers: `myPlacedOffers()`, `myReceivedOffers()`, `myCollectionOffers()`, `collectionOffer()`, `cancelCollectionOffer()`
+- More in updated documentation
+
 ## Getting started (authData)
 
 Unlike Tonnel Marketplace, every request in Portals needs to be authenticated.
@@ -259,6 +264,46 @@ cancelOffer(offer_id: str="", authData: str="") -> dict|None
 ```
 
 - Cancel offer with known offer_id
+
+#### collectionOffer()
+
+```python
+collectionOffer(gift_name: str = "", amount: float | int = 0, expiration_days: int = 7, max_nfts: int = 1, authData: str = "")
+```
+
+- Make offer for collection
+
+#### cancelCollectionOffer()
+
+```python
+cancelCollectionOffer(offer_id: str = "", authData: str = "")
+```
+
+- Cancel collection offer with known offer_id
+
+#### myPlacedOffers()
+
+```python
+myPlacedOffers(offset: int = 0, limit: int = 20, authData: str = "")
+```
+
+- Returns a list of dicts with your placed offers
+
+#### myReceivedOffers()
+
+```python
+myReceivedOffers(offset: int = 0, limit: int = 20, authData: str = "")
+```
+
+- Returns a list of dicts with offers you have received on your gifts
+
+#### myCollectionOffers()
+
+```python
+myCollectionOffers(authData: str = "")
+```
+
+- Returns a list of dicts with collection offers you have made
 
 #### changePrice()
 
