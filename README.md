@@ -28,6 +28,10 @@ Huge thanks to boostNT [for his code sample](https://github.com/boostNT/Portals-
 - Added functions for working with offers: `myPlacedOffers()`, `myReceivedOffers()`, `myCollectionOffers()`, `collectionOffer()`, `cancelCollectionOffer()`
 - More in updated documentation
 
+#### Version 1.1.1
+
+- Added `topOffer()` function
+
 ## Getting started (authData)
 
 Unlike Tonnel Marketplace, every request in Portals needs to be authenticated.
@@ -280,6 +284,14 @@ cancelCollectionOffer(offer_id: str = "", authData: str = "")
 ```
 
 - Cancel collection offer with known offer_id
+
+#### topOffer()
+
+```python
+topOffer(gift_name: str = "", authData: str = "")
+```
+
+- Returns top offer for specified gift collection
 
 #### myPlacedOffers()
 
