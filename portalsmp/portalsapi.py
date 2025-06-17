@@ -995,3 +995,38 @@ def myCollectionOffers(authData: str = ""):
         raise Exception(f"portalsmp: myCollectionOffers(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
+
+def topOffer(gift_name: str = "", authData: str = ""):
+    """
+    Retrieves the top offer for a specified gift collection.
+
+    Args:
+        gift_name (str): The name of the gift collection.
+        authData (str): The authentication data required for the API request.
+
+    Returns:
+        dict: A dictionary containing the top offer details if the request is successful.
+
+    Raises:
+        Exception: If gift_name is not provided.
+        Exception: If authData is not provided.
+        Exception: If the API request fails or returns a non-200 status code.
+    """
+    URL = API_URL + "collection-offers/"
+
+    try:
+        ID = collections_ids[cap(gift_name)]
+    except:
+        raise Exception("portalsmp: topOffer(): Error: gift_name is invalid")
+
+    if authData == "":
+        raise Exception("portalsmp: topOffer(): Error: authData is required")
+
+    HEADERS["Authorization"] = authData
+
+    response = requests.get(URL + f"{ID}/top", headers=HEADERS, impersonate="chrome110")
+
+    if response.status_code != 200:
+        raise Exception(f"portalsmp: topOffer(): Error: status_code: {response.status_code}, response_text: {response.text}")
+
+    return response.json() if response.status_code == 200 else None
