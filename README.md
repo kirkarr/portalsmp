@@ -12,11 +12,18 @@ Huge thanks to boostNT [for his code sample](https://github.com/boostNT/Portals-
 
 `pip install portalsmp`
 
-#### Change log
+## Change log
 
-- Version 1.0 - First Beta release of the module. Working on most of the functions and bug fixes. Send your feedback to my [telegram](t.me/perfectlystill)
+#### Version 1.0
 
-#### Getting started (authData)
+- First Beta release of the module. Working on most of the functions and bug fixes. Send your feedback to my [telegram](t.me/perfectlystill)
+
+#### Version 1.0.1
+
+- Removed `owner_id` from `buy()` function and `PortalsGift` class
+- `makeOffer()` should be fixed now.
+
+## Getting started (authData)
 
 Unlike Tonnel Marketplace, every request in Portals needs to be authenticated.
 
