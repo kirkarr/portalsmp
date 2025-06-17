@@ -6,6 +6,7 @@ from pyrogram.raw.types import InputBotAppShortName, InputUser
 from pyrogram.raw.functions.users import GetUsers
 from curl_cffi import requests
 import re
+from portalsmp.collections_ids import collections_ids
 
 def cap(text) -> str:
     words = re.findall(r"\w+(?:'\w+)?", text)
@@ -102,15 +103,15 @@ def search(sort: str = "price_asc", offset: int = 0, limit: int = 20, gift_name:
         min_price = int(min_price)
         max_price = int(max_price)
     except:
-        raise Exception("portalsapi: search(): Error: min_price and max_price must be integers")
+        raise Exception("portalsmp: search(): Error: min_price and max_price must be integers")
     
     if max_price < 100000:
         URL += f"&min_price={min_price}&max_price={max_price}"
 
     if authData == "":
-        raise Exception("portalsapi: search(): Error: authData is required")
+        raise Exception("portalsmp: search(): Error: authData is required")
     if max_price < min_price:
-        raise Exception("portalsapi: search(): Error: max_price must be greater than min_price")
+        raise Exception("portalsmp: search(): Error: max_price must be greater than min_price")
 
     if gift_name:
         if type(gift_name) == str:
@@ -118,28 +119,28 @@ def search(sort: str = "price_asc", offset: int = 0, limit: int = 20, gift_name:
         elif type(gift_name) == list:
             URL += f"&filter_by_collections={listToURL(gift_name)}"
         else:
-            raise Exception("portalsapi: search(): Error: gift_name must be a string or list")
+            raise Exception("portalsmp: search(): Error: gift_name must be a string or list")
     if model:
         if type(model) == str:
             URL += f"&filter_by_models={quote_plus(cap(model))}"
         elif type(model) == list:
             URL += f"&filter_by_models={listToURL(model)}"
         else:
-            raise Exception("portalsapi: search(): Error: model must be a string or list")
+            raise Exception("portalsmp: search(): Error: model must be a string or list")
     if backdrop:
         if type(backdrop) == str:
             URL += f"&filter_by_backdrops={quote_plus(cap(backdrop))}"
         elif type(backdrop) == list:
             URL += f"&filter_by_backdrops={listToURL(backdrop)}"
         else:
-            raise Exception("portalsapi: search(): Error: backdrop must be a string or list")
+            raise Exception("portalsmp: search(): Error: backdrop must be a string or list")
     if symbol:
         if type(symbol) == str:
             URL += f"&filter_by_symbols={quote_plus(cap(symbol))}"
         elif type(symbol) == list:
             URL += f"&filter_by_symbols={listToURL(symbol)}"
         else:
-            raise Exception("portalsapi: search(): Error: symbol must be a string or list")
+            raise Exception("portalsmp: search(): Error: symbol must be a string or list")
     
     URL += "&status=listed"
 
@@ -147,7 +148,7 @@ def search(sort: str = "price_asc", offset: int = 0, limit: int = 20, gift_name:
 
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
-        raise Exception(f"portalsapi: search(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: search(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json()["results"] if response.json()["results"] else response.json()
 
@@ -169,13 +170,13 @@ def giftsFloors(authData: str = "") -> dict:
     URL = API_URL + "collections/floors"
 
     if authData == "":
-        raise Exception("portalsapi: giftsFloors(): Error: authData is required")
+        raise Exception("portalsmp: giftsFloors(): Error: authData is required")
 
     HEADERS["Authorization"] = authData
 
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
-        raise Exception(f"portalsapi: giftsFloors(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: giftsFloors(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json()['floorPrices'] if response.json()['floorPrices'] else None
 
@@ -199,7 +200,7 @@ def myPortalsGifts(offset: int = 0, limit: int = 20, listed: bool = True, authDa
     URL = API_URL + "nfts/" + "owned?" + f"offset={offset}" + f"&limit={limit}"
 
     if authData == "":
-        raise Exception("portalsapi: myPortalsGifts(): Error: authData is required")
+        raise Exception("portalsmp: myPortalsGifts(): Error: authData is required")
     if listed == True:
         URL += "&status=listed"
     else:
@@ -209,7 +210,7 @@ def myPortalsGifts(offset: int = 0, limit: int = 20, listed: bool = True, authDa
 
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
-        raise Exception(f"portalsapi: myPortalsGifts(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: myPortalsGifts(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json()['nfts'] if response.json()['nfts'] else response.json()
 
@@ -230,13 +231,13 @@ def myPoints(authData: str = "") -> dict:
     URL = API_URL + "points/my-points"
 
     if authData == "":
-        raise Exception("portalsapi: myPoints(): Error: authData is required")
+        raise Exception("portalsmp: myPoints(): Error: authData is required")
 
     HEADERS["Authorization"] = authData
 
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
-        raise Exception(f"portalsapi: myPoints(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: myPoints(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
 
@@ -257,13 +258,13 @@ def myBalances(authData: str = "") -> dict:
     URL = API_URL + "users/wallets/"
 
     if authData == "":
-        raise Exception("portalsapi: myBalances(): Error: authData is required")
+        raise Exception("portalsmp: myBalances(): Error: authData is required")
 
     HEADERS["Authorization"] = authData
 
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
-        raise Exception(f"portalsapi: myBalances(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: myBalances(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
 
@@ -286,13 +287,13 @@ def myActivity(offset: int = 0, limit: int = 20, authData: str = "") -> list:
     URL = API_URL + "users/actions/" + f"?offset={offset}" + f"&limit={limit}"
 
     if authData == "":
-        raise Exception("portalsapi: myActivity(): Error: authData is required")
+        raise Exception("portalsmp: myActivity(): Error: authData is required")
 
     HEADERS["Authorization"] = authData
 
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
-        raise Exception(f"portalsapi: myActivity(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: myActivity(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json()['actions'] if response.json()['actions'] else response.json()
 
@@ -314,13 +315,13 @@ def collections(limit: int = 100, authData: str = "") -> list:
     URL = API_URL + "collections" + f"?limit={limit}"
 
     if authData == "":
-        raise Exception("portalsapi: collections(): Error: authData is required")
+        raise Exception("portalsmp: collections(): Error: authData is required")
 
     HEADERS["Authorization"] = authData
 
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
-        raise Exception(f"portalsapi: collections(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: collections(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json()['collections'] if response.json()['collections'] else response.json()
 
@@ -360,17 +361,17 @@ def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activ
         min_price = int(min_price)
         max_price = int(max_price)
     except:
-        raise Exception("portalsapi: marketActivity(): Error: min_price and max_price must be integers")
+        raise Exception("portalsmp: marketActivity(): Error: min_price and max_price must be integers")
 
     if max_price < 100000:
         URL += f"&min_price={min_price}&max_price={max_price}"
 
     if authData == "":
-        raise Exception("portalsapi: marketActivity(): Error: authData is required")
+        raise Exception("portalsmp: marketActivity(): Error: authData is required")
     if max_price < min_price:
-        raise Exception("portalsapi: marketActivity(): Error: max_price must be greater than min_price")
+        raise Exception("portalsmp: marketActivity(): Error: max_price must be greater than min_price")
     if activityType.lower() not in ["", "buy", "listing", "price_update", "offer"]:
-        raise Exception("portalsapi: marketActivity(): Error: activityType may be empty, buy, listing, offer or price_update only.")
+        raise Exception("portalsmp: marketActivity(): Error: activityType may be empty, buy, listing, offer or price_update only.")
 
     if gift_name:
         if type(gift_name) == str:
@@ -378,28 +379,28 @@ def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activ
         elif type(gift_name) == list:
             URL += f"&filter_by_collections={listToURL(gift_name)}"
         else:
-            raise Exception("portalsapi: marketActivity(): Error: gift_name must be a string or list")
+            raise Exception("portalsmp: marketActivity(): Error: gift_name must be a string or list")
     if model:
         if type(model) == str:
             URL += f"&filter_by_models={quote_plus(cap(model))}"
         elif type(model) == list:
             URL += f"&filter_by_models={listToURL(model)}"
         else:
-            raise Exception("portalsapi: marketActivity(): Error: model must be a string or list")
+            raise Exception("portalsmp: marketActivity(): Error: model must be a string or list")
     if backdrop:
         if type(backdrop) == str:
             URL += f"&filter_by_backdrops={quote_plus(cap(backdrop))}"
         elif type(backdrop) == list:
             URL += f"&filter_by_backdrops={listToURL(backdrop)}"
         else:
-            raise Exception("portalsapi: marketActivity(): Error: backdrop must be a string or list")
+            raise Exception("portalsmp: marketActivity(): Error: backdrop must be a string or list")
     if symbol:
         if type(symbol) == str:
             URL += f"&filter_by_symbols={quote_plus(cap(symbol))}"
         elif type(symbol) == list:
             URL += f"&filter_by_symbols={listToURL(symbol)}"
         else:
-            raise Exception("portalsapi: marketActivity(): Error: symbol must be a string or list")
+            raise Exception("portalsmp: marketActivity(): Error: symbol must be a string or list")
     if activityType:
         URL += f"&filter_by_activity_type={quote_plus(activityType.lower())}"
 
@@ -409,7 +410,7 @@ def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activ
 
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
-        raise Exception(f"portalsapi: marketActivity(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: marketActivity(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json()['results'] if response.json()['results'] else response.json()
 
@@ -439,9 +440,9 @@ def bulkList(nfts: list = [], authData: str = "") -> dict:
     URL = API_URL + "nfts/bulk-list"
 
     if authData == "":
-        raise Exception("portalsapi: bulkList(): Error: authData is required")
+        raise Exception("portalsmp: bulkList(): Error: authData is required")
     if type(nfts) != list or len(nfts) == 0:
-        raise Exception("portalsapi: bulkList(): Error: nfts must be a non-empty list")
+        raise Exception("portalsmp: bulkList(): Error: nfts must be a non-empty list")
 
     HEADERS["Authorization"] = authData
 
@@ -451,7 +452,7 @@ def bulkList(nfts: list = [], authData: str = "") -> dict:
 
     response = requests.post(URL, json=PAYLOAD, headers=HEADERS, impersonate="chrome110")
     if response.status_code not in [200, 204]:
-        raise Exception(f"portalsapi: bulkList(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: bulkList(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
 
@@ -478,11 +479,11 @@ def sale(nft_id: str = "", price: int|float = 0,authData: str = "") -> dict | No
     URL = API_URL + "nfts/bulk-list"
 
     if authData == "":
-        raise Exception("portalsapi: sale(): Error: authData is required")
+        raise Exception("portalsmp: sale(): Error: authData is required")
     if not nft_id:
-        raise Exception("portalsapi: sale(): Error: nft_id is required")
+        raise Exception("portalsmp: sale(): Error: nft_id is required")
     if price == 0 or type(price) not in [int, float]:
-        raise Exception("portalsapi: sale(): Error: price error")
+        raise Exception("portalsmp: sale(): Error: price error")
 
     nfts = [{"nft_id": nft_id, "price": str(price)}]
 
@@ -494,7 +495,7 @@ def sale(nft_id: str = "", price: int|float = 0,authData: str = "") -> dict | No
 
     response = requests.post(URL, json=PAYLOAD, headers=HEADERS, impersonate="chrome110")
     if response.status_code not in [200, 204]:
-        raise Exception(f"portalsapi: sale(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: sale(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
 
@@ -520,11 +521,11 @@ def buy(nft_id: str = "", price: int|float = 0, authData: str = "") -> dict | No
     URL = API_URL + "nfts"
 
     if authData == "":
-        raise Exception("portalsapi: buy(): Error: authData is required")
+        raise Exception("portalsmp: buy(): Error: authData is required")
     if not nft_id:
-        raise Exception("portalsapi: buy(): Error: nft_id is required")
+        raise Exception("portalsmp: buy(): Error: nft_id is required")
     if price == 0 or type(price) not in [int, float]:
-        raise Exception("portalsapi: buy(): Error: price error")
+        raise Exception("portalsmp: buy(): Error: price error")
 
     HEADERS["Authorization"] = authData
 
@@ -539,7 +540,7 @@ def buy(nft_id: str = "", price: int|float = 0, authData: str = "") -> dict | No
 
     response = requests.post(URL, json=PAYLOAD, headers=HEADERS, impersonate="chrome110")
     if response.status_code not in [200, 204]:
-        raise Exception(f"portalsapi: buy(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: buy(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
 
@@ -568,13 +569,13 @@ def makeOffer(nft_id: str = "", offer_price: float = 0, expiration_days: int = 7
     URL = API_URL + "offers"
 
     if not nft_id:
-        raise Exception("portalsapi: makeOffer(): Error: nft_id is required")
+        raise Exception("portalsmp: makeOffer(): Error: nft_id is required")
     if offer_price == 0:
-        raise Exception("portalsapi: makeOffer(): Error: offer_price is required")
+        raise Exception("portalsmp: makeOffer(): Error: offer_price is required")
     if expiration_days not in [7, 0]:
-        raise Exception("portalsapi: makeOffer(): Error: expiration_days must be 7 or 0")
+        raise Exception("portalsmp: makeOffer(): Error: expiration_days must be 7 or 0")
     if authData == "":
-        raise Exception("portalsapi: makeOffer(): Error: authData is required")
+        raise Exception("portalsmp: makeOffer(): Error: authData is required")
 
     HEADERS["Authorization"] = authData
 
@@ -590,7 +591,7 @@ def makeOffer(nft_id: str = "", offer_price: float = 0, expiration_days: int = 7
     
     response = requests.post(URL, json=PAYLOAD, headers=HEADERS, impersonate="chrome110")
     if response.status_code not in [200, 204]:
-        raise Exception(f"portalsapi: makeOffer(): Error: status_code: {response.status_code}, response_text: {response.content}")
+        raise Exception(f"portalsmp: makeOffer(): Error: status_code: {response.status_code}, response_text: {response.content}")
 
     return response.json() if response.status_code == 200 else None
 
@@ -614,15 +615,15 @@ def cancelOffer(offer_id: str = "", authData: str = "") -> dict | None:
     URL = API_URL + "offers/" + f"{offer_id}" + "/cancel"
 
     if not offer_id:
-        raise Exception("portalsapi: cancelOffer(): Error: offer_id is required")
+        raise Exception("portalsmp: cancelOffer(): Error: offer_id is required")
     if authData == "":
-        raise Exception("portalsapi: cancelOffer(): Error: authData is required")
+        raise Exception("portalsmp: cancelOffer(): Error: authData is required")
 
     HEADERS["Authorization"] = authData
 
     response = requests.post(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code not in [200, 204]:
-        raise Exception(f"portalsapi: cancelOffer(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: cancelOffer(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
 
@@ -649,11 +650,11 @@ def changePrice(nft_id: str = "", price: float = 0, authData: str = "") -> dict 
     URL = API_URL + "nfts/" + f"{nft_id}/" + "list"
 
     if not nft_id:
-        raise Exception("portalsapi: changePrice(): Error: nft_id is required")
+        raise Exception("portalsmp: changePrice(): Error: nft_id is required")
     if price == 0:
-        raise Exception("portalsapi: changePrice(): Error: price is required")
+        raise Exception("portalsmp: changePrice(): Error: price is required")
     if authData == "":
-        raise Exception("portalsapi: changePrice(): Error: authData is required")
+        raise Exception("portalsmp: changePrice(): Error: authData is required")
 
     HEADERS["Authorization"] = authData
 
@@ -663,7 +664,7 @@ def changePrice(nft_id: str = "", price: float = 0, authData: str = "") -> dict 
 
     response = requests.post(URL, json=PAYLOAD, headers=HEADERS, impersonate="chrome110")
     if response.status_code not in [200, 204]:
-        raise Exception(f"portalsapi: changePrice(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: changePrice(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
 
@@ -806,11 +807,11 @@ def withdrawPortals(amount: float = 0, wallet: str = "", authData: str = "") -> 
     URL = API_URL + "users/wallets/withdraw"
 
     if amount == 0:
-        raise Exception("portalsapi: withdrawPortals(): Error: amount is required")
+        raise Exception("portalsmp: withdrawPortals(): Error: amount is required")
     if not wallet:
-        raise Exception("portalsapi: withdrawPortals(): Error: wallet is required")
+        raise Exception("portalsmp: withdrawPortals(): Error: wallet is required")
     if not authData:
-        raise Exception("portalsapi: withdrawPortals(): Error: authData is required")
+        raise Exception("portalsmp: withdrawPortals(): Error: authData is required")
     
     HEADERS["Authorization"] = authData
 
@@ -821,6 +822,176 @@ def withdrawPortals(amount: float = 0, wallet: str = "", authData: str = "") -> 
     
     response = requests.post(URL, json=PAYLOAD, headers=HEADERS, impersonate="chrome110")
     if response.status_code not in [200, 204]:
-        raise Exception(f"portalsapi: withdrawPortals(): Error: status_code: {response.status_code}, response_text: {response.text}")
+        raise Exception(f"portalsmp: withdrawPortals(): Error: status_code: {response.status_code}, response_text: {response.text}")
+
+    return response.json() if response.status_code == 200 else None
+
+def collectionOffer(gift_name: str = "", amount: float | int = 0, expiration_days: int = 7, max_nfts: int = 1, authData: str = ""):
+    """
+    Make an offer for collection.
+
+    Args:
+        gift_name (str): A name of the collection
+        amount (float | int): Amount of offer
+        expiration_days (int: 0 or 7): 7 - the offer will expire after 7 days; 0 - no expiration.
+        max_nfts (int): Quantity of NFTs to buy. Default = 1.
+        authData (str): authData
+
+    Returns:
+        dict: A dictionary containing id, collection_id, status etc. of the collection offer
+
+    Raises:
+        Exception: If gift_name is not provided.
+        Exception: If gift_name is invalid.
+        Exception: If amount is not provided.
+        Exception: If max_nfts is not provided.
+        Exception: If authData is not provided.
+        Exception: If expiration_days is not 0 or 7.
+        Exception: If the API request fails or returns a non-200 status code.
+    """
+    URL = API_URL + "collection-offers/"
+
+    if not gift_name:
+        raise Exception("portalsmp: collectionOffer(): Error: gift_name is required")
+    
+    if amount <= 0.0:
+        raise Exception("portalsmp: collectionOffer(): Error: amount is required")
+    
+    if max_nfts <= 0:
+        raise Exception("portalsmp: collectionOffer(): Error: max_nfts is required")
+    
+    if not authData:
+        raise Exception("portalsmp: collectionOffer(): Error: authData is required")
+    
+    if expiration_days not in [0,7]:
+        raise Exception("portalsmp: collectionOffer(): Error: expiration_days must be 0 (no expiration) or 7 (7 days)")
+    
+    gift_name = cap(gift_name)
+
+    try:
+        ID = collections_ids[gift_name]
+    except:
+        raise Exception("portalsmp: collectionOffer(): Error: gift_name is invalid")
+
+    HEADERS["Authorization"] = authData
+
+    PAYLOAD = {
+        "amount": str(amount),
+        "collection_id": ID,
+        "expiration_days": expiration_days,
+        "max_nfts": max_nfts
+    }
+
+    response = requests.post(url=URL, headers=HEADERS, json=PAYLOAD, impersonate="chrome110")
+
+    if response.status_code not in [200,201,204]:
+        raise Exception(f"portalsmp: collectionOffer(): Error: status_code: {response.status_code}, response_text: {response.text}")
+    
+    return response.json() if response.status_code in [200, 201] else None
+
+def cancelCollectionOffer(offer_id: str = "", authData: str = ""):
+    URL = API_URL + "collection-offers/cancel"
+
+    if not offer_id:
+        raise Exception("portalsmp: cancelCollectionOffer(): Error: offer_id is required")
+
+    if not authData:
+        raise Exception("portalsmp: cancelCollectionOffer(): Error: authData is required")
+    
+    HEADERS["Authorization"] = authData
+
+    PAYLOAD = {
+        "id": offer_id
+    }
+
+    response = requests.post(url=URL, headers=HEADERS, json=PAYLOAD, impersonate="chrome110")
+
+    if response.status_code not in [200, 204]:
+        raise Exception(f"portalsmp: cancelCollectionOffer(): Error: status_code: {response.status_code}, response_text: {response.text}")
+
+    return response.json() if response.status_code == 200 else None
+
+def myPlacedOffers(offset: int = 0, limit: int = 20, authData: str = ""):
+    """
+    Retrieves the offers placed by the user.
+
+    Args:
+        offset (int): The pagination offset. Defaults to 0.
+        limit (int): The maximum number of results to return. Defaults to 20.
+        authData (str): The authentication data required for the API request.
+
+    Returns:
+        list: A list of placed offers if the request is successful.
+
+    Raises:
+        Exception: If authData is not provided.
+        Exception: If the API request fails or returns a non-200 status code.
+    """
+    URL = API_URL + f"offers/placed?offset={offset}&limit={limit}"
+
+    if authData == "":
+        raise Exception("portalsmp: myPlacedOffers(): Error: authData is required")
+
+    HEADERS["Authorization"] = authData
+
+    response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
+    if response.status_code != 200:
+        raise Exception(f"portalsmp: myPlacedOffers(): Error: status_code: {response.status_code}, response_text: {response.text}")
+
+    return response.json()['offers'] if 'offers' in response.json() else response.json()
+
+def myReceivedOffers(offset: int = 0, limit: int = 20, authData: str = ""):
+    """
+    Retrieves the offers received by the user.
+
+    Args:
+        offset (int): The pagination offset. Defaults to 0.
+        limit (int): The maximum number of results to return. Defaults to 20.
+        authData (str): The authentication data required for the API request.
+
+    Returns:
+        list: A list of received offers if the request is successful.
+
+    Raises:
+        Exception: If authData is not provided.
+        Exception: If the API request fails or returns a non-200 status code.
+    """
+    URL = API_URL + f"offers/received?offset={offset}&limit={limit}"
+
+    if authData == "":
+        raise Exception("portalsmp: myReceivedOffers(): Error: authData is required")
+
+    HEADERS["Authorization"] = authData
+
+    response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
+    if response.status_code != 200:
+        raise Exception(f"portalsmp: myReceivedOffers(): Error: status_code: {response.status_code}, response_text: {response.text}")
+
+    return response.json()['top_offers'] if 'top_offers' in response.json() else response.json()
+
+def myCollectionOffers(authData: str = ""):
+    """
+    Retrieves the collection offers placed by the user.
+
+    Args:
+        authData (str): The authentication data required for the API request.
+
+    Returns:
+        list: A list of collection offers if the request is successful.
+
+    Raises:
+        Exception: If authData is not provided.
+        Exception: If the API request fails or returns a non-200 status code.
+    """
+
+    URL = API_URL + "collection-offers/"
+    if authData == "":
+        raise Exception("portalsmp: myCollectionOffers(): Error: authData is required")
+
+    HEADERS["Authorization"] = authData
+
+    response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
+    if response.status_code != 200:
+        raise Exception(f"portalsmp: myCollectionOffers(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
