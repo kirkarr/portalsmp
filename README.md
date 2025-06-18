@@ -32,6 +32,10 @@ Huge thanks to boostNT [for his code sample](https://github.com/boostNT/Portals-
 
 - Added `topOffer()` function
 
+#### Version 1.1.2
+
+- Added list support for `marketActivity()` function (activityType=str|list)
+
 ## Getting started (authData)
 
 Unlike Tonnel Marketplace, every request in Portals needs to be authenticated.
