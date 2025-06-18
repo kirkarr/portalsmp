@@ -325,7 +325,7 @@ def collections(limit: int = 100, authData: str = "") -> list:
 
     return response.json()['collections'] if response.json()['collections'] else response.json()
 
-def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activityType: str = "", gift_name: str | list= "", model: str | list = "", backdrop: str | list = "", symbol: str | list = "", min_price: int = 0, max_price: int = 100000, authData: str = "") -> list:
+def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activityType: str | list = "", gift_name: str | list= "", model: str | list = "", backdrop: str | list = "", symbol: str | list = "", min_price: int = 0, max_price: int = 100000, authData: str = "") -> list:
     """
     Retrieves market activity with various filters and sorting options.
 
@@ -370,8 +370,10 @@ def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activ
         raise Exception("portalsmp: marketActivity(): Error: authData is required")
     if max_price < min_price:
         raise Exception("portalsmp: marketActivity(): Error: max_price must be greater than min_price")
-    if activityType.lower() not in ["", "buy", "listing", "price_update", "offer"]:
+    if type(activityType) == str and activityType.lower() not in ["", "buy", "listing", "price_update", "offer"]:
         raise Exception("portalsmp: marketActivity(): Error: activityType may be empty, buy, listing, offer or price_update only.")
+    if type(activityType) == list:
+        activityType = listToURL(activityType)
 
     if gift_name:
         if type(gift_name) == str:
@@ -539,10 +541,10 @@ def buy(nft_id: str = "", price: int|float = 0, authData: str = "") -> dict | No
     }
 
     response = requests.post(URL, json=PAYLOAD, headers=HEADERS, impersonate="chrome110")
-    if response.status_code not in [200, 204]:
+    if response.status_code not in [200, 204, 422]:
         raise Exception(f"portalsmp: buy(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
-    return response.json() if response.status_code == 200 else None
+    return response.json() if response.status_code in [200, 422] else None
 
 def makeOffer(nft_id: str = "", offer_price: float = 0, expiration_days: int = 7, authData: str = "") -> dict | None:
     """
@@ -993,40 +995,5 @@ def myCollectionOffers(authData: str = ""):
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
         raise Exception(f"portalsmp: myCollectionOffers(): Error: status_code: {response.status_code}, response_text: {response.text}")
-
-    return response.json() if response.status_code == 200 else None
-
-def topOffer(gift_name: str = "", authData: str = ""):
-    """
-    Retrieves the top offer for a specified gift collection.
-
-    Args:
-        gift_name (str): The name of the gift collection.
-        authData (str): The authentication data required for the API request.
-
-    Returns:
-        dict: A dictionary containing the top offer details if the request is successful.
-
-    Raises:
-        Exception: If gift_name is not provided.
-        Exception: If authData is not provided.
-        Exception: If the API request fails or returns a non-200 status code.
-    """
-    URL = API_URL + "collection-offers/"
-
-    try:
-        ID = collections_ids[cap(gift_name)]
-    except:
-        raise Exception("portalsmp: topOffer(): Error: gift_name is invalid")
-
-    if authData == "":
-        raise Exception("portalsmp: topOffer(): Error: authData is required")
-
-    HEADERS["Authorization"] = authData
-
-    response = requests.get(URL + f"{ID}/top", headers=HEADERS, impersonate="chrome110")
-
-    if response.status_code != 200:
-        raise Exception(f"portalsmp: topOffer(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
