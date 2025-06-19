@@ -41,6 +41,10 @@ Huge thanks to boostNT [for his code sample](https://github.com/boostNT/Portals-
 - `cancelOffer()` should work now
 - Returned `topOffer()` function.
 
+#### Version 1.1.4
+
+- Fixed `marketActivity()` function
+
 ## Getting started (authData)
 
 Unlike Tonnel Marketplace, every request in Portals needs to be authenticated.
