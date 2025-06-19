@@ -19,6 +19,9 @@ def cap(text) -> str:
 def listToURL(gifts: list) -> str:
     return '%2C'.join(quote_plus(cap(gift)) for gift in gifts)
 
+def activityListToURL(activity: list) -> str:
+    return '%2C'.join(activity)
+
 async def update_auth(api_id: int|str, api_hash: str) -> str:
     """
     Updates Telegram authData for Portals API using Pyrogram.
@@ -325,7 +328,7 @@ def collections(limit: int = 100, authData: str = "") -> list:
 
     return response.json()['collections'] if response.json()['collections'] else response.json()
 
-def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activityType: str = "", gift_name: str | list= "", model: str | list = "", backdrop: str | list = "", symbol: str | list = "", min_price: int = 0, max_price: int = 100000, authData: str = "") -> list:
+def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activityType: str | list = "", gift_name: str | list= "", model: str | list = "", backdrop: str | list = "", symbol: str | list = "", min_price: int = 0, max_price: int = 100000, authData: str = "") -> list:
     """
     Retrieves market activity with various filters and sorting options.
 
@@ -355,7 +358,7 @@ def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activ
         Exception: If the API request fails.
     """
 
-    URL = API_URL + "nfts/" + "search?" + f"offset={offset}" + f"&limit={limit}" + f"{SORTS[sort]}"
+    URL = API_URL + "market/actions/" + f"?offset={offset}" + f"&limit={limit}" + f"{SORTS[sort]}"
 
     try:
         min_price = int(min_price)
@@ -370,8 +373,10 @@ def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activ
         raise Exception("portalsmp: marketActivity(): Error: authData is required")
     if max_price < min_price:
         raise Exception("portalsmp: marketActivity(): Error: max_price must be greater than min_price")
-    if activityType.lower() not in ["", "buy", "listing", "price_update", "offer"]:
+    if type(activityType) == str and activityType.lower() not in ["", "buy", "listing", "price_update", "offer"]:
         raise Exception("portalsmp: marketActivity(): Error: activityType may be empty, buy, listing, offer or price_update only.")
+    if type(activityType) == list:
+        activityType = activityListToURL(activityType)
 
     if gift_name:
         if type(gift_name) == str:
@@ -402,17 +407,14 @@ def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activ
         else:
             raise Exception("portalsmp: marketActivity(): Error: symbol must be a string or list")
     if activityType:
-        URL += f"&filter_by_activity_type={quote_plus(activityType.lower())}"
-
-    URL += "&status=listed"
+        URL += f"&action_types={activityType}"
 
     HEADERS["Authorization"] = authData
-
     response = requests.get(URL, headers=HEADERS, impersonate="chrome110")
     if response.status_code != 200:
         raise Exception(f"portalsmp: marketActivity(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
-    return response.json()['results'] if response.json()['results'] else response.json()
+    return response.json()['actions'] if 'actions' in response.json() else response.json()
 
 def convertForListing(nft_id: str = "", price: float = 0):
     return {"nft_id": nft_id, "price": str(price)}
