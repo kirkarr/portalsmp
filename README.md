@@ -45,6 +45,12 @@ Huge thanks to boostNT [for his code sample](https://github.com/boostNT/Portals-
 
 - Fixed `marketActivity()` function
 
+#### Version 1.2
+
+- Offers: added `editOffer()`, `allCollectionOffers()` functions
+- Misc: added `filterFloors()` function
+- Switched from pyrogram to kurigram in dependencies, also removed pycryptodome from there.
+
 ## Getting started (authData)
 
 Unlike Tonnel Marketplace, every request in Portals needs to be authenticated.
@@ -188,6 +194,15 @@ giftsFloors(authData: str="") -> dict
 
 - Returns floors for all the gifts (short names only)
 
+### filterFloors()
+
+```python
+filterFloors(gift_name: str = "", authData: str = "") -> dict
+```
+
+- Returns a dict of floors of all models/backdrops/symbols for specified gift collection
+- Usage: `filterFloors(gift_name="toy bear", authData="...")["models"]` - will return all models of Toy Bear gift collection with floors etc.
+
 #### myPortalsGifts()
 
 ```python
@@ -282,6 +297,14 @@ cancelOffer(offer_id: str="", authData: str="") -> dict|None
 
 - Cancel offer with known offer_id
 
+#### editOffer()
+
+```python
+editOffer(offer_id: str = "", new_price: float = 0, authData: str = "") -> None
+```
+
+- Edit the price of the offer with known `offer_id`
+
 #### collectionOffer()
 
 ```python
@@ -297,6 +320,14 @@ cancelCollectionOffer(offer_id: str = "", authData: str = "")
 ```
 
 - Cancel collection offer with known offer_id
+
+#### allCollectionOffers()
+
+```python
+allCollectionOffers(gift_name: str = "", authData: str = "") -> list
+```
+
+- Returns a list of dicts with all collection offers for the specified gift collection (`gift_name`)
 
 #### topOffer()
 
@@ -351,7 +382,7 @@ withdrawPortals(amount: float=0, wallet: str="", authData: str="") -> dict
 
 ## Info
 
-currently working on detailed documentation + remaining functions + bug fixes
+currently working on detailed documentation
 
 *my telegram: [t.me/perfectlystill](https://t.me/perfectlystill)*
 
