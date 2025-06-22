@@ -22,6 +22,9 @@ def listToURL(gifts: list) -> str:
 def activityListToURL(activity: list) -> str:
     return '%2C'.join(activity)
 
+def toShortName(gift_name):
+    return gift_name.replace(" ", "").replace("'", "").replace("’", "").replace("-", "").lower()
+
 async def update_auth(api_id: int|str, api_hash: str) -> str:
     """
     Updates Telegram authData for Portals API using Pyrogram.
@@ -215,7 +218,7 @@ def myPortalsGifts(offset: int = 0, limit: int = 20, listed: bool = True, authDa
     if response.status_code != 200:
         raise Exception(f"portalsmp: myPortalsGifts(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
-    return response.json()['nfts'] if response.json()['nfts'] else response.json()
+    return response.json()['nfts'] if 'nfts' in response.json() else response.json()
 
 def myPoints(authData: str = "") -> dict:
     """
@@ -913,6 +916,69 @@ def cancelCollectionOffer(offer_id: str = "", authData: str = ""):
 
     return response.json() if response.status_code == 200 else None
 
+def allCollectionOffers(gift_name: str = "", authData: str = "") -> list:
+    """
+    Retrieves all collection offers for a specific gift collection.
+    Args:
+        gift_name (str): The name of the gift collection.
+        authData (str): The authentication data required for the API request.
+    Returns:
+        list: A list of dictionaries containing all collection offers for the specified gift collection.
+    Raises:
+        Exception: If gift_name is not provided or is invalid.
+        Exception: If authData is not provided.
+        Exception: If the API request fails or returns a non-200 status code.
+    """
+    URL = API_URL + "collection-offers/"
+
+    if not gift_name:
+        raise Exception("portalsmp: allCollectionOffers(): Error: gift_name is required")
+    gift_name = cap(gift_name)
+    try:
+        ID = collections_ids[gift_name]
+    except:
+        raise Exception("portalsmp: allCollectionOffers(): Error: gift_name is invalid")
+    if not authData:
+        raise Exception("portalsmp: allCollectionOffers(): Error: authData is required")
+    
+    URL += f"{ID}/all"
+    HEADERS["Authorization"] = authData
+    response = requests.get(url=URL, headers=HEADERS, impersonate="chrome110")
+    if response.status_code != 200:
+        raise Exception(f"portalsmp: allCollectionOffers(): Error: status_code: {response.status_code}, response_text: {response.text}")
+    return response.json() if response.status_code == 200 else None
+
+def filterFloors(gift_name: str = "", authData: str = "") -> dict:
+    """
+    Retrieves the floor prices of models/backdrops/symbols for a specific gift collection.
+    Args:
+        gift_name (str): The name of the gift collection.
+        authData (str): The authentication data required for the API request.
+    Returns:
+        dict: A dictionary containing the floor prices of models, backgrounds, and symbols for the specified gift collection. To get models, backgrounds, and symbols floor prices, use the keys "models", "backdrops", and "symbols".
+    Raises:
+        Exception: If authData is not provided.
+        Exception: If gift_name is not provided or is not a string.
+        Exception: If the API request fails or returns a non-200 status code.
+    """
+    URL = API_URL + "collections/filters"
+
+    if not authData:
+        raise Exception("portalsmp: filters(): Error: authData is required")
+    if not gift_name:
+        raise Exception("portalsmp: filters(): Error: gift_name is required")
+    if type(gift_name) == str:
+        gift_name = toShortName(gift_name)
+    if type(gift_name) != str:
+        raise Exception("portalsmp: filters(): Error: gift_name must be a string")
+
+    URL += f"?short_names={gift_name}"
+    HEADERS["Authorization"] = authData
+    response = requests.get(url=URL, headers=HEADERS, impersonate="chrome110")
+    if response.status_code != 200:
+        raise Exception(f"portalsmp: filters(): Error: status_code: {response.status_code}, response_text: {response.text}")
+    return response.json()['floor_prices'][gift_name] if response.status_code == 200 else None
+
 def myPlacedOffers(offset: int = 0, limit: int = 20, authData: str = ""):
     """
     Retrieves the offers placed by the user.
@@ -941,6 +1007,40 @@ def myPlacedOffers(offset: int = 0, limit: int = 20, authData: str = ""):
         raise Exception(f"portalsmp: myPlacedOffers(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json()['offers'] if 'offers' in response.json() else response.json()
+
+def editOffer(offer_id: str = "", new_price: float = 0, authData: str = "") -> None:
+    """
+    Edit existing offer price.
+    Args:
+        offer_id (str): The unique identifier of the offer to be edited.
+        new_price (int | float): The new price to set for the offer.
+        authData (str): The authentication data required for the API request.
+    Returns:
+        None: If the request is successful and the offer is edited.
+    Raises:
+        Exception: If offer_id is not provided.
+        Exception: If new_price is not provided or is less than 0.5.
+        Exception: If authData is not provided.
+        Exception: If the API request fails or returns a non-200 status code.
+    """
+    URL = API_URL + "offers/" + f"{offer_id}"
+
+    if not offer_id:
+        raise Exception("portalsmp: editOffer(): Error: offer_id is required")
+    if type(new_price) not in [float, int] or new_price < 0.5:
+        raise Exception("portalsmp: editOffer(): Error: new_price must be a number >= 0.5")
+    if not authData:
+        raise Exception("portalsmp: editOffer(): Error: authData is required")
+    
+    PAYLOAD = {
+        "amount": str(float(new_price))
+    }
+
+    HEADERS["Authorization"] = authData
+    response = requests.patch(url=URL, json=PAYLOAD, headers=HEADERS, impersonate="chrome110")
+    if response.status_code not in [200, 204]:
+        raise Exception(f"portalsmp: editOffer(): Error: status_code: {response.status_code}, response_text: {response.text}")
+    return None if response.status_code == 204 else response.json()
 
 def myReceivedOffers(offset: int = 0, limit: int = 20, authData: str = ""):
     """
