@@ -1,4 +1,5 @@
-[![pypi](https://img.shields.io/pypi/v/portalsmp.svg)](https://pypi.org/project/portalsmp/) [![stars](https://img.shields.io/github/stars/bleach-hub/portalsmp?style=social)](https://github.com/bleach-hub/portalsmp/stargazers) [![Me](https://img.shields.io/badge/Telegram-@perfectlystill-blue?logo=telegram)](https://t.me/perfectlystill) [![Updates & Devs chat](https://img.shields.io/badge/Telegram-@giftsdevs-blue?logo=telegram)](https://t.me/giftsdevs)
+[![pypi](https://img.shields.io/pypi/v/portalsmp.svg)](https://pypi.org/project/portalsmp/) ![PyPI - Downloads](https://img.shields.io/pypi/dm/portalsmp)
+ [![stars](https://img.shields.io/github/stars/bleach-hub/portalsmp?style=social)](https://github.com/bleach-hub/portalsmp/stargazers) [![Me](https://img.shields.io/badge/Telegram-@perfectlystill-blue?logo=telegram)](https://t.me/perfectlystill) [![Updates & Devs chat](https://img.shields.io/badge/Telegram-@giftsdevs-blue?logo=telegram)](https://t.me/giftsdevs)
 
 # Portals Marketplace API
 
