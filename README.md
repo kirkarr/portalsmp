@@ -9,6 +9,8 @@ Huge thanks to boostNT [for his code sample](https://github.com/boostNT/Portals-
 
 *[Join our devs chat!](t.me/giftsdevschat)*
 
+*[Check out the async version of this library](https://github.com/bleach-hub/aportalsmp)*
+
 #### Installation
 
 `pip install portalsmp`
