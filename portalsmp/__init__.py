@@ -1,4 +1,4 @@
-from test.portalsapi import *
+from portalsmp.portalsapi import *
 
 __all__ = [
     "cap",
