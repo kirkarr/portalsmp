@@ -6,7 +6,9 @@ from pyrogram.raw.types import InputBotAppShortName, InputUser
 from pyrogram.raw.functions.users import GetUsers
 from curl_cffi import requests
 import re
-from portalsmp.collections_ids import collections_ids
+
+
+collections_ids = {} # Will be dynamically loaded upon startup
 
 def cap(text) -> str:
     words = re.findall(r"\w+(?:'\w+)?", text)
@@ -25,12 +27,12 @@ def activityListToURL(activity: list) -> str:
 def toShortName(gift_name):
     return gift_name.replace(" ", "").replace("'", "").replace("’", "").replace("-", "").lower()
 
-async def update_auth(api_id: int|str, api_hash: str) -> str:
+async def update_auth(api_id: int or str, api_hash: str) -> str:
     """
     Updates Telegram authData for Portals API using Pyrogram.
 
     Args:
-        api_id (int|str)
+        api_id (int or str)
         api_hash (str)
 
     Returns:
@@ -74,7 +76,7 @@ HEADERS = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0"
     }
 
-def search(sort: str = "price_asc", offset: int = 0, limit: int = 20, gift_name: str | list = "", model: str | list = "", backdrop: str | list = "", symbol: str | list = "", min_price: int = 0, max_price: int = 100000, authData: str = "") -> list:
+def search(sort: str = "price_asc", offset: int = 0, limit: int = 20, gift_name: str  or  list = "", model: str  or  list = "", backdrop: str  or  list = "", symbol: str  or  list = "", min_price: int = 0, max_price: int = 100000, authData: str = "") -> list:
     """
     Search for gifts with various filters and sorting options.
 
@@ -84,10 +86,10 @@ def search(sort: str = "price_asc", offset: int = 0, limit: int = 20, gift_name:
             "model_rarity_asc", "model_rarity_desc". Defaults to "price_asc".
         offset (int): The pagination offset (limit*page). Defaults to 0.
         limit (int): The maximum number of results to return. Defaults to 20 (probably max is 20).
-        gift_name (str | list): The name or list of names of gifts to filter.
-        model (str | list): The model or list of models to filter.
-        backdrop (str | list): The backdrop or list of backdrops to filter.
-        symbol (str | list): The symbol or list of symbols to filter.
+        gift_name (str  or  list): The name or list of names of gifts to filter.
+        model (str  or  list): The model or list of models to filter.
+        backdrop (str  or  list): The backdrop or list of backdrops to filter.
+        symbol (str  or  list): The symbol or list of symbols to filter.
         min_price (int): The minimum price of the gifts to filter. Defaults to 0.
         max_price (int): The maximum price of the gifts to filter. Defaults to 100000.
         authData (str): The authentication data required for the API request.
@@ -329,9 +331,13 @@ def collections(limit: int = 100, authData: str = "") -> list:
     if response.status_code != 200:
         raise Exception(f"portalsmp: collections(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
+    for collection in response.json()['collections']:
+        if collection['name'] != "":
+            collections_ids[collection['name']] = collection['id']
+
     return response.json()['collections'] if response.json()['collections'] else response.json()
 
-def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activityType: str | list = "", gift_name: str | list= "", model: str | list = "", backdrop: str | list = "", symbol: str | list = "", min_price: int = 0, max_price: int = 100000, authData: str = "") -> list:
+def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activityType: str  or  list = "", gift_name: str  or  list= "", model: str  or  list = "", backdrop: str  or  list = "", symbol: str  or  list = "", min_price: int = 0, max_price: int = 100000, authData: str = "") -> list:
     """
     Retrieves market activity with various filters and sorting options.
 
@@ -342,10 +348,10 @@ def marketActivity(sort: str = "latest", offset: int = 0, limit: int = 20, activ
         limit (int): The maximum number of results to return. Defaults to 20.
         activityType (str): The type of activity to filter by. Options are "buy", "listing", "price_update", 
             "offer", or an empty string for no filter.
-        gift_name (str | list): The name or list of names of gifts to filter.
-        model (str | list): The model or list of models to filter.
-        backdrop (str | list): The backdrop or list of backdrops to filter.
-        symbol (str | list): The symbol or list of symbols to filter.
+        gift_name (str  or  list): The name or list of names of gifts to filter.
+        model (str  or  list): The model or list of models to filter.
+        backdrop (str  or  list): The backdrop or list of backdrops to filter.
+        symbol (str  or  list): The symbol or list of symbols to filter.
         min_price (int): The minimum price of the gifts to filter. Defaults to 0.
         max_price (int): The maximum price of the gifts to filter. Defaults to 100000.
         authData (str): The authentication data required for the API request.
@@ -461,13 +467,13 @@ def bulkList(nfts: list = [], authData: str = "") -> dict:
 
     return response.json() if response.status_code == 200 else None
 
-def sale(nft_id: str = "", price: int|float = 0,authData: str = "") -> dict | None:
+def sale(nft_id: str = "", price: int or float = 0,authData: str = "") -> dict  or  None:
     """
     Lists a single NFT for sale.
 
     Args:
         nft_id (str): The unique identifier of the NFT to be listed.
-        price (int|float): The price at which the NFT should be listed for sale.
+        price (int or float): The price at which the NFT should be listed for sale.
         authData (str): The authentication data required for the API request.
 
     Returns:
@@ -504,13 +510,13 @@ def sale(nft_id: str = "", price: int|float = 0,authData: str = "") -> dict | No
 
     return response.json() if response.status_code == 200 else None
 
-def buy(nft_id: str = "", price: int|float = 0, authData: str = "") -> dict | None:
+def buy(nft_id: str = "", price: int or float = 0, authData: str = "") -> dict  or  None:
     """
     Buys a gift with the given nft_id at the given price.
 
     Args:
         nft_id (str): The unique identifier of the NFT to be bought.
-        price (int|float): The price at which the NFT should be bought.
+        price (int or float): The price at which the NFT should be bought.
         authData (str): The authentication data required for the API request.
 
     Returns:
@@ -549,7 +555,7 @@ def buy(nft_id: str = "", price: int|float = 0, authData: str = "") -> dict | No
 
     return response.json() if response.status_code == 200 else None
 
-def makeOffer(nft_id: str = "", offer_price: float = 0, expiration_days: int = 7, authData: str = "") -> dict | None:
+def makeOffer(nft_id: str = "", offer_price: float = 0, expiration_days: int = 7, authData: str = "") -> dict  or  None:
     """
     Creates an offer for a specified NFT.
 
@@ -600,7 +606,7 @@ def makeOffer(nft_id: str = "", offer_price: float = 0, expiration_days: int = 7
 
     return response.json() if response.status_code == 200 else None
 
-def cancelOffer(offer_id: str = "", authData: str = "") -> dict | None:
+def cancelOffer(offer_id: str = "", authData: str = "") -> dict  or  None:
     """
     Cancels an offer with the given offer_id.
 
@@ -632,7 +638,7 @@ def cancelOffer(offer_id: str = "", authData: str = "") -> dict | None:
 
     return response.json() if response.status_code == 200 else None
 
-def changePrice(nft_id: str = "", price: float = 0, authData: str = "") -> dict | None:
+def changePrice(nft_id: str = "", price: float = 0, authData: str = "") -> dict  or  None:
     """
     Updates the price of a specified NFT.
 
@@ -831,13 +837,13 @@ def withdrawPortals(amount: float = 0, wallet: str = "", authData: str = "") -> 
 
     return response.json() if response.status_code == 200 else None
 
-def collectionOffer(gift_name: str = "", amount: float | int = 0, expiration_days: int = 7, max_nfts: int = 1, authData: str = ""):
+def collectionOffer(gift_name: str = "", amount: float  or  int = 0, expiration_days: int = 7, max_nfts: int = 1, authData: str = ""):
     """
     Make an offer for collection.
 
     Args:
         gift_name (str): A name of the collection
-        amount (float | int): Amount of offer
+        amount (float  or  int): Amount of offer
         expiration_days (int: 0 or 7): 7 - the offer will expire after 7 days; 0 - no expiration.
         max_nfts (int): Quantity of NFTs to buy. Default = 1.
         authData (str): authData
@@ -874,6 +880,8 @@ def collectionOffer(gift_name: str = "", amount: float | int = 0, expiration_day
     gift_name = cap(gift_name)
 
     try:
+        if len(collections_ids) == 0:
+            update_collections_ids(authData=authData)
         ID = collections_ids[gift_name]
     except:
         raise Exception("portalsmp: collectionOffer(): Error: gift_name is invalid")
@@ -935,6 +943,8 @@ def allCollectionOffers(gift_name: str = "", authData: str = "") -> list:
         raise Exception("portalsmp: allCollectionOffers(): Error: gift_name is required")
     gift_name = cap(gift_name)
     try:
+        if len(collections_ids) == 0:
+            update_collections_ids(authData=authData)
         ID = collections_ids[gift_name]
     except:
         raise Exception("portalsmp: allCollectionOffers(): Error: gift_name is invalid")
@@ -1013,7 +1023,7 @@ def editOffer(offer_id: str = "", new_price: float = 0, authData: str = "") -> N
     Edit existing offer price.
     Args:
         offer_id (str): The unique identifier of the offer to be edited.
-        new_price (int | float): The new price to set for the offer.
+        new_price (int  or  float): The new price to set for the offer.
         authData (str): The authentication data required for the API request.
     Returns:
         None: If the request is successful and the offer is edited.
@@ -1117,6 +1127,8 @@ def topOffer(gift_name: str = "", authData: str = ""):
     URL = API_URL + "collection-offers/"
 
     try:
+        if len(collections_ids) == 0:
+            update_collections_ids(authData=authData)
         ID = collections_ids[cap(gift_name)]
     except:
         raise Exception("portalsmp: topOffer(): Error: gift_name is invalid")
@@ -1132,3 +1144,19 @@ def topOffer(gift_name: str = "", authData: str = ""):
         raise Exception(f"portalsmp: topOffer(): Error: status_code: {response.status_code}, response_text: {response.text}")
 
     return response.json() if response.status_code == 200 else None
+
+def update_collections_ids(authData: str):
+    """
+    Updates a collections_ids dict with new data from portals
+
+    Args:
+        authData (str): The authentication data required for the API request.
+        
+    Raises:
+        Exception: If the API request fails or returns a non-200 status code.
+    """
+    global collections_ids
+    collects = collections(limit=200, authData = authData)
+    for i in collects:
+        if i['name'] != "":
+            collections_ids[i['name']] = i['id']
